@@ -1,17 +1,14 @@
 <script setup>
-import { defineProps, reactive } from 'vue'
-defineProps({
-  msg: {
-    type: String,
-    default: 'lisi'
-  }
-})
+
 </script>
 
 <template>
-  <div>welcome-{{msg}}</div>
-  <router-link to="login">去登陆</router-link>
+  <div class="welcome">
+    <router-link to="login">去登陆</router-link>
+  </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+// .welcome {
+// }
 </style>
