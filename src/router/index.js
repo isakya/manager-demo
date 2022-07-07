@@ -1,7 +1,7 @@
 // 哈希模式不用再Nginx里配置，比较方便
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-import Home from './../components/Home.vue'
+import Home from '@/components/Home.vue'
 
 
 
@@ -21,7 +21,7 @@ const routes = [
         meta: {
           title: '欢迎页'
         },
-        component: () => import('./../views/Welcome.vue')
+        component: () => import('@/views/Welcome.vue')
       }
     ]
   },
@@ -31,7 +31,7 @@ const routes = [
     meta: {
       title: '登陆'
     },
-    component: () => import('./../views/Login.vue'),
+    component: () => import('@/views/Login.vue'),
   }
 ]
 
