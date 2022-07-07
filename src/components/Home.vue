@@ -1,14 +1,22 @@
 <script>
+import TreeMenu from './TreeMenu.vue'
 export default {
   name: 'Home',
+  components: {
+    TreeMenu
+  },
   data() {
     return {
       isCollapse: false,
-      userInfo: {
-        userName: 'izumi',
-        userEmail: 'izumi@admin.com'
-      }
+      userInfo: this.$store.state.userInfo,
+      noticeCount: 0,
+      userMenu: [],
+      activeMenu: location.hash.slice(1)
     }
+  },
+  mounted() {
+    this.getNoticeCount()
+    this.getMenuList()
   },
   methods: {
     toggle() {
@@ -19,6 +27,22 @@ export default {
       this.$store.commit('saveUserInfo', '')
       this.userInfo = null
       this.$router.push('/login')
+    },
+    async getNoticeCount() {
+      try {
+        const count = await this.$api.noticeCount()
+        this.noticeCount = count
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async getMenuList() {
+      try {
+        const list = await this.$api.getMenuList()
+        this.userMenu = list
+      } catch (error) {
+        console.error(error)
+      }
     }
   }
 }
@@ -37,41 +61,14 @@ export default {
       </div>
       <!-- 导航菜单 -->
       <el-menu
-        default-active="2"
+        :default-active="activeMenu"
         class="nav-menu"
         router
         background-color="#001529"
         text-color="#fff"
         :collapse="isCollapse"
       >
-        <el-sub-menu index="1">
-          <template #title>
-            <el-icon :style="iconStyle">
-              <Setting />
-            </el-icon>
-            <span>系统管理</span>
-          </template>
-          <el-menu-item index="1-1">
-            用户管理
-          </el-menu-item>
-          <el-menu-item index="1-2">
-            菜单管理
-          </el-menu-item>
-        </el-sub-menu>
-        <el-sub-menu index="2">
-          <template #title>
-            <el-icon :style="iconStyle">
-              <Setting />
-            </el-icon>
-            <span>审批管理</span>
-          </template>
-          <el-menu-item index="2-1">
-            休假申请
-          </el-menu-item>
-          <el-menu-item index="2-2">
-            待我审批
-          </el-menu-item>
-        </el-sub-menu>
+        <tree-menu :userMenu="userMenu" />
       </el-menu>
     </div>
     <div :class="['content-right', isCollapse ? 'fold' : 'unfold']">
@@ -79,7 +76,6 @@ export default {
         <div class="nav-left">
           <el-icon
             @click="toggle"
-            :style="iconStyle"
             class="menu-fold"
           >
             <Fold />
@@ -88,11 +84,11 @@ export default {
         </div>
         <div class="user-info">
           <el-badge
-            :is-dot="true"
+            :is-dot="noticeCount > 0 ? true : false"
             class="notice"
             type="danger"
           >
-            <el-icon :style="iconStyle">
+            <el-icon>
               <Bell />
             </el-icon>
           </el-badge>
