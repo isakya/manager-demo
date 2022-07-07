@@ -1,9 +1,11 @@
 <script>
+import BreadCrumb from './BreadCrumb.vue'
 import TreeMenu from './TreeMenu.vue'
 export default {
   name: 'Home',
   components: {
-    TreeMenu
+    TreeMenu,
+    BreadCrumb
   },
   data() {
     return {
@@ -80,7 +82,9 @@ export default {
           >
             <Fold />
           </el-icon>
-          <div class="bread">面板屑</div>
+          <div class="bread">
+            <BreadCrumb />
+          </div>
         </div>
         <div class="user-info">
           <el-badge
