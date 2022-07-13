@@ -19,29 +19,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #fff;
 
   height: 100%;
+
   .content {
     // 相对自身定位
     position: relative;
     // 往上移动20px
     bottom: 20px;
+
     .sub-title {
       font-size: 30px;
       line-height: 42px;
       color: #333;
     }
+
     .title {
       font-size: 40px;
       line-height: 62px;
       color: #4093ff;
     }
+
     .desc {
       text-align: right;
       font-size: 14px;
       color: #999;
     }
   }
+
   .img {
     margin-left: 105px;
     background-image: url('./../assets/images/welcome.jpg');
