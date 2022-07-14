@@ -33,7 +33,7 @@
           :formatter="item.formatter" :width="item.width" />
         <el-table-column label="操作" width="150">
           <template #default="scope">
-            <el-button type="primary" size="small">编辑</el-button>
+            <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -45,10 +45,10 @@
     <el-dialog title="用户新增" v-model="showModal">
       <el-form ref="dialogForm" :rules="rules" :model="userForm" label-width="100px">
         <el-form-item label="用户名" prop="userName">
-          <el-input v-model="userForm.userName" placeholder="请输入用户名称" />
+          <el-input :disabled="action === 'edit'" v-model="userForm.userName" placeholder="请输入用户名称" />
         </el-form-item>
         <el-form-item label="邮箱" prop="userEmail">
-          <el-input v-model="userForm.userEmail" placeholder="请输入用户邮箱">
+          <el-input :disabled="action === 'edit'" v-model="userForm.userEmail" placeholder="请输入用户邮箱">
             <template #append>
               @izumi.com
             </template>
@@ -248,6 +248,7 @@ const handleSelectionChange = (list) => {
 
 // 用户新增
 const handleCreate = () => {
+  action.value = 'add'
   showModal.value = true
 }
 
@@ -284,7 +285,18 @@ const handleSubmit = () => {
 }
 // 用户弹窗关闭
 const handleClose = () => {
-
+  showModal.value = false
+  handleReset('dialogForm')
+}
+// 用户编辑
+const handleEdit = (row) => {
+  action.value = 'edit'
+  showModal.value = true
+  // 等dom渲染完成之后再执行代码
+  proxy.$nextTick(() => {
+    // 给表单赋上数据项的值
+    Object.assign(userForm, row)
+  })
 }
 </script>
 
