@@ -30,7 +30,7 @@ export default {
     return request({
       url: '/users/list',
       method: 'get',
-      mock: true,
+      mock: false,
       data: params
     })
   },
@@ -38,7 +38,7 @@ export default {
     return request({
       url: '/users/delete',
       method: 'post',
-      mock: true,
+      mock: false,
       data: params
     })
   },
@@ -62,7 +62,7 @@ export default {
     return request({
       url: '/users/operate',
       method: 'post',
-      mock: true,
+      mock: false,
       data: params
     })
   },

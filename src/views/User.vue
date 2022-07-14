@@ -88,13 +88,14 @@
 </template>
 <script setup>
 import { getCurrentInstance, onMounted, reactive, toRaw, toRefs, ref } from 'vue'
+import utils from './../utils/utils'
 // 获取表单元素
 const form = ref(null)
 // 得到vue3全局上下文对象
 const { proxy } = getCurrentInstance()
 // 初始化用户表单对象
 const user = reactive({
-  state: 3
+  state: 1
 })
 // 初始化用户列表数据
 const userList = ref([])
@@ -135,7 +136,7 @@ const rules = reactive({
   ],
   mobile: [
     {
-      pattern: /1{3-9}\d{9}/,
+      pattern: /1[3-9]\d{9}/,
       message: '请输入正确的手机号格式',
       trigger: 'blur'
     }
@@ -171,8 +172,16 @@ const columns = reactive([
       }[value]
     }
   },
-  { label: '注册时间', prop: 'createTime' },
-  { label: '最后登陆时间', prop: 'lastLoginTime' },
+  {
+    label: '注册时间', prop: 'createTime', formatter: (row, column, value) => {
+      return utils.formateDate(new Date(value))
+    }
+  },
+  {
+    label: '最后登陆时间', prop: 'lastLoginTime', formatter: (row, column, value) => {
+      return utils.formateDate(new Date(value))
+    }
+  },
 ])
 
 // 初始化接口调用
@@ -229,7 +238,7 @@ const handlePatchDel = async () => {
   const res = await proxy.$api.userDel({
     userIds: checkedUserIds.value // 可单个删除，也可批量删除
   })
-  if (res.nModified > 0) {
+  if (res.modifiedCount > 0) {
     proxy.$message.success('删除成功')
     getUserList()
   } else {
@@ -270,16 +279,15 @@ const handleSubmit = () => {
     if (valid) {
       // 把响应式对象转换为普通对象
       let params = toRaw(userForm)
-      params.email += '@izumi.com'
+      params.userEmail += '@izumi.com'
       params.action = action.value
       let res = await proxy.$api.userSubmit(params)
-      if (res) {
-        showModal.value = false
-        proxy.$message.success('用户创建成功')
-        handleReset('dialogForm')
-        getUserList()
-        showModal.value = false
-      }
+      showModal.value = false
+      proxy.$message.success('用户更新成功')
+      handleReset('dialogForm')
+      getUserList()
+      showModal.value = false
+
     }
   })
 }
