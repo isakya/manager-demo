@@ -18,12 +18,12 @@ export default {
       mock: true
     })
   },
-  getMenuList() {
+  getMenuList(params) {
     return request({
       url: '/menu/list',
       method: 'get',
-      mock: true,
-      data: {}
+      mock: false,
+      data: params
     })
   },
   getUserList(params) {
@@ -70,7 +70,7 @@ export default {
     return request({
       url: '/menu/operate',
       method: 'post',
-      mock: true,
+      mock: false,
       data: params
     })
   },

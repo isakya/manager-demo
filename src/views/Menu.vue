@@ -28,7 +28,7 @@
           <template #default="scope">
             <el-button type="primary" size="small" @click="handleAdd(2, scope.row)">新增</el-button>
             <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDel(scope.row)">删除</el-button>
+            <el-button type="danger" size="small" @click="handleDel(scope.row._id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -53,10 +53,10 @@
         <el-form-item label="菜单图标" prop="icon" v-show="menuForm.menuType === 1">
           <el-input v-model="menuForm.icon" placeholder="请输入菜单图标" />
         </el-form-item>
-        <el-form-item label="路由地址" prop="path">
+        <el-form-item label="路由地址" prop="path" v-show="menuForm.menuType === 1">
           <el-input v-model="menuForm.path" placeholder="请输入路由地址" />
         </el-form-item>
-        <el-form-item label="权限标识" prop="menuCode" v-show="menuForm.menuType === 1">
+        <el-form-item label="权限标识" prop="menuCode">
           <el-input v-model="menuForm.menuCode" placeholder="请输入权限标识" />
         </el-form-item>
         <el-form-item label="组件路径" prop="component" v-show="menuForm.menuType === 1">
@@ -90,6 +90,7 @@ let queryForm = reactive({
 let menuList = ref([])
 let showModal = ref(false)
 let menuForm = ref({
+  parentId: [null],
   menuType: 1,
   menuState: 1
 })
@@ -177,19 +178,27 @@ const handleAdd = (type, row) => {
   }
 }
 
-const handleEdit = () => {
-
+const handleEdit = (row) => {
+  showModal.value = true
+  action.value = 'edit'
+  proxy.$nextTick(() => {
+    // 浅拷贝
+    console.log(menuForm.value)
+    Object.assign(menuForm.value, row)
+  })
 }
 
-const handleDel = () => {
-
+const handleDel = async (_id) => {
+  await proxy.$api.menuSubmit({ _id, action: 'delete' })
+  proxy.$message.success('删除成功')
+  getMenuList()
 }
 
 // 菜单操作提交
 const handleSubmit = () => {
   proxy.$refs.dialogForm.validate(async (valid) => {
     if (valid) {
-      let params = { ...menuForm, action }
+      let params = { ...menuForm.value, action: action.value }
       let res = await proxy.$api.menuSubmit(params)
       proxy.$message.success('操作成功')
       handleReset('dialogForm')
