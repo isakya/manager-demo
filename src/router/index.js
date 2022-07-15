@@ -45,7 +45,7 @@ const routes = [
         meta: {
           title: '角色管理'
         },
-        component: () => import('@/views/role.vue')
+        component: () => import('@/views/Role.vue')
       }
     ]
   },
