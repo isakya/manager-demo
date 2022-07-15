@@ -21,7 +21,7 @@
         <el-table-column label="操作" width="250">
           <template #default="scope">
             <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="primary" size="small">设置权限</el-button>
+            <el-button type="primary" size="small" @click="handleOpenPermission(scope.row)">设置权限</el-button>
             <el-button type="danger" size="small" @click="handleDel(scope.row._id)">删除</el-button>
           </template>
         </el-table-column>
@@ -47,6 +47,24 @@
         </span>
       </template>
     </el-dialog>
+    <!-- 权限弹框 -->
+    <el-dialog title="权限设置" v-model="showPermission">
+      <el-form label-width="100px">
+        <el-form-item label="角色名称">
+          {{ curRoleName }}
+        </el-form-item>
+        <el-form-item label="选择权限">
+          <el-tree ref="permissionTree" default-expand-all :data="menuList" node-key="_id"
+            :props="{ label: 'menuName' }" show-checkbox />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showPermission = false">取 消</el-button>
+          <el-button type="primary" @click="handlePermissionSubmit">确 认</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script setup>
@@ -60,6 +78,7 @@ let queryForm = reactive({
 })
 
 let showModal = ref(false)
+
 let roleForm = ref({})
 let action = ref('create')
 // 校验规则
@@ -144,6 +163,50 @@ const handleSubmit = () => {
   })
 }
 
+// 权限展示
+let showPermission = ref(false)
+let curRoleName = ref('')
+let curRoleId = ref('')
+let menuList = ref([])
+const handleOpenPermission = (row) => {
+  curRoleId.value = row._id
+  curRoleName.value = row.roleName
+  showPermission.value = true
+  let { checkedKeys } = row.permissionList
+  proxy.$nextTick(() => {
+    proxy.$refs.permissionTree.setCheckedKeys(checkedKeys)
+  })
+}
+const handlePermissionSubmit = async () => {
+  let nodes = proxy.$refs.permissionTree.getCheckedNodes()
+  let halfKeys = proxy.$refs.permissionTree.getHalfCheckedKeys()
+  let checkedKeys = []
+  let parentKeys = []
+  nodes.map(node => {
+    if (!node.children) {
+      checkedKeys.push(node._id)
+    } else {
+      parentKeys.push(node._id)
+    }
+  })
+  let params = {
+    _id: curRoleId.value,
+    permissionList: {
+      checkedKeys,
+      halfCheckedKeys: parentKeys.concat(halfKeys)
+    }
+  }
+  await proxy.$api.updatePermission(params)
+  showPermission.value = false
+  proxy.$message.success('设置成功')
+  getRoleList()
+}
+
+const getMenuList = async () => {
+  const list = await proxy.$api.getMenuList(queryForm)
+  menuList.value = list
+}
+
 
 // 关闭dialog
 const handleClose = () => {
@@ -154,8 +217,10 @@ const handleCurrentChange = () => {
 
 }
 
+
 onMounted(() => {
   getRoleList()
+  getMenuList()
 })
 
 // 菜单列表初始化
