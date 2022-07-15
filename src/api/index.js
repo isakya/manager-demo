@@ -66,4 +66,12 @@ export default {
       data: params
     })
   },
+  menuSubmit(params) {
+    return request({
+      url: '/menu/operate',
+      method: 'post',
+      mock: true,
+      data: params
+    })
+  },
 }

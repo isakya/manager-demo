@@ -19,14 +19,14 @@
     </div>
     <div class="base-table">
       <div class="action">
-        <el-button type="primary" @click="handleAdd">新增</el-button>
+        <el-button type="primary" @click="handleAdd(1)">新增</el-button>
       </div>
       <el-table row-key="_id" :data="menuList" :tree-props="{ children: 'children' }">
         <el-table-column v-for="item in columns" :key="item.prop" :prop="item.prop" :label="item.label" prop="date"
           :formatter="item.formatter" :width="item.width" />
         <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleAdd(scope.row)">新增</el-button>
+            <el-button type="primary" size="small" @click="handleAdd(2, scope.row)">新增</el-button>
             <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDel(scope.row)">删除</el-button>
           </template>
@@ -34,39 +34,39 @@
       </el-table>
     </div>
     <!-- 新增用户 -->
-    <!-- <el-dialog title="用户新增" v-model="showModal">
-      <el-form ref="dialogForm" :rules="rules" :model="userForm" label-width="100px">
-        <el-form-item label="用户名" prop="userName">
-          <el-input :disabled="action === 'edit'" v-model="userForm.userName" placeholder="请输入用户名称" />
+    <el-dialog title="用户新增" v-model="showModal">
+      <el-form ref="dialogForm" :rules="rules" :model="menuForm" label-width="100px">
+        <el-form-item label="父级菜单" prop="parentId">
+          <el-cascader v-model="menuForm.parentId" :options="menuList"
+            :props="{ checkStrictly: true, value: '_id', label: 'menuName' }" clearable />
+          <span>不选，则直接创建一级菜单</span>
         </el-form-item>
-        <el-form-item label="邮箱" prop="userEmail">
-          <el-input :disabled="action === 'edit'" v-model="userForm.userEmail" placeholder="请输入用户邮箱">
-            <template #append>
-              @izumi.com
-            </template>
-          </el-input>
+        <el-form-item label="菜单类型" prop="menuType">
+          <el-radio-group v-model="menuForm.menuType">
+            <el-radio :label="1">菜单</el-radio>
+            <el-radio :label="2">按钮</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="手机号" prop="mobile">
-          <el-input v-model="userForm.mobile" placeholder="请输入手机号" />
+        <el-form-item label="菜单名称" prop="menuName">
+          <el-input v-model="menuForm.menuName" placeholder="请输入菜单名称" />
         </el-form-item>
-        <el-form-item label="岗位" prop="job">
-          <el-input v-model="userForm.job" placeholder="请输入岗位" />
+        <el-form-item label="菜单图标" prop="icon" v-show="menuForm.menuType === 1">
+          <el-input v-model="menuForm.icon" placeholder="请输入菜单图标" />
         </el-form-item>
-        <el-form-item label="状态" prop="state">
-          <el-select v-model="userForm.state">
-            <el-option :value="1" label="在职"></el-option>
-            <el-option :value="2" label="离职"></el-option>
-            <el-option :value="3" label="试用期"></el-option>
-          </el-select>
+        <el-form-item label="路由地址" prop="path">
+          <el-input v-model="menuForm.path" placeholder="请输入路由地址" />
         </el-form-item>
-        <el-form-item label="系统角色" prop="roleList">
-          <el-select v-model="userForm.roleList" placeholder="请选择用户系统角色" multiple style="width:100%">
-            <el-option v-for="role in roleList" :key="role._id" :label="role.roleName" :value="role._id"></el-option>
-          </el-select>
+        <el-form-item label="权限标识" prop="menuCode" v-show="menuForm.menuType === 1">
+          <el-input v-model="menuForm.menuCode" placeholder="请输入权限标识" />
         </el-form-item>
-        <el-form-item label="部门" prop="deptId">
-          <el-cascader v-model="userForm.deptId" style="width:100%" :options="deptList" placeholder="请选择所属部门"
-            :props="{ checkStrictly: true, value: '_id', label: 'deptName' }" clearable />
+        <el-form-item label="组件路径" prop="component" v-show="menuForm.menuType === 1">
+          <el-input v-model="menuForm.component" placeholder="请输入组件路径" />
+        </el-form-item>
+        <el-form-item label="菜单状态" prop="menuState" v-show="menuForm.menuType === 1">
+          <el-radio-group v-model="menuForm.menuState">
+            <el-radio :label="1">正常</el-radio>
+            <el-radio :label="2">停用</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -75,7 +75,7 @@
           <el-button type="primary" @click="handleSubmit">确 认</el-button>
         </span>
       </template>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 <script setup>
@@ -87,10 +87,28 @@ const { proxy } = getCurrentInstance()
 let queryForm = reactive({
   menuState: 1
 })
-
-let menuList = ref([
-
-])
+let menuList = ref([])
+let showModal = ref(false)
+let menuForm = ref({
+  menuType: 1,
+  menuState: 1
+})
+let action = ref('')
+let rules = reactive({
+  menuName: [
+    {
+      required: true,
+      message: '请输入菜单名称',
+      trigger: 'blur'
+    },
+    {
+      min: 2,
+      max: 10,
+      message: '长度需在2-8个字符',
+      trigger: 'blur'
+    }
+  ]
+})
 
 const columns = reactive([
   {
@@ -144,11 +162,19 @@ const columns = reactive([
 ])
 
 const handleQuery = () => {
-
+  getMenuList()
+}
+const handleReset = (form) => {
+  proxy.$refs[form].resetFields()
 }
 
-const handleAdd = () => {
-
+// 新增菜单
+const handleAdd = (type, row) => {
+  showModal.value = true
+  action.value = 'add'
+  if (type === 2) {
+    menuForm.value.parentId = [...row.parentId, row._id].filter(item => item)
+  }
 }
 
 const handleEdit = () => {
@@ -159,21 +185,40 @@ const handleDel = () => {
 
 }
 
+// 菜单操作提交
+const handleSubmit = () => {
+  proxy.$refs.dialogForm.validate(async (valid) => {
+    if (valid) {
+      let params = { ...menuForm, action }
+      let res = await proxy.$api.menuSubmit(params)
+      proxy.$message.success('操作成功')
+      handleReset('dialogForm')
+      showModal.value = false
+      getMenuList()
+    }
+  })
+}
+// 关闭dialog
+const handleClose = () => {
+  showModal.value = false
+  handleReset('dialogForm')
+}
+
 onMounted(() => {
   getMenuList()
 })
 
+// 菜单列表初始化
 const getMenuList = async () => {
   try {
     const list = await proxy.$api.getMenuList(queryForm)
-
     menuList.value = list
-
-    console.log(menuList)
   } catch (error) {
     throw new Error(error)
   }
 }
+
+
 
 
 </script>
