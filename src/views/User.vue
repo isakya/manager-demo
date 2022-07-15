@@ -188,7 +188,7 @@ const columns = reactive([
 onMounted(() => {
   getUserList()
   getDeptList()
-  getRoleList()
+  getRoleAllList()
 })
 // 获取用户列表
 const getUserList = async () => {
@@ -268,8 +268,8 @@ const getDeptList = async () => {
 }
 
 // 获取角色列表
-const getRoleList = async () => {
-  let res = await proxy.$api.getRoleList()
+const getRoleAllList = async () => {
+  let res = await proxy.$api.getRoleAllList()
   roleList.value = res
 }
 
