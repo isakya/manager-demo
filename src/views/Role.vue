@@ -109,7 +109,17 @@ const columns = reactive([
   },
   {
     label: '权限列表',
-    prop: '',
+    prop: 'permissionList',
+    formatter: (row, column, value) => {
+      if (value.halfCheckedKeys) {
+        let names = []
+        let list = value.halfCheckedKeys || []
+        list.map(key => {
+          if (key) names.push(actionMap.value[key])
+        })
+        return names.join(',')
+      }
+    }
   },
   {
     label: '创建时间',
@@ -201,10 +211,30 @@ const handlePermissionSubmit = async () => {
   proxy.$message.success('设置成功')
   getRoleList()
 }
-
+// 菜单列表初始化
 const getMenuList = async () => {
   const list = await proxy.$api.getMenuList(queryForm)
   menuList.value = list
+  getActionMap(list)
+}
+
+// 菜单映射表
+let actionMap = ref({})
+const getActionMap = (list) => {
+  let _actionMap = {}
+  const deep = (arr) => {
+    while (arr.length) {
+      let item = arr.pop()
+      if (item.children && item.action) {
+        _actionMap[item._id] = item.menuName
+      }
+      if (item.children && !item.action) {
+        deep(item.children)
+      }
+    }
+  }
+  deep(JSON.parse(JSON.stringify(list)))
+  actionMap.value = _actionMap
 }
 
 
@@ -223,7 +253,7 @@ onMounted(() => {
   getMenuList()
 })
 
-// 菜单列表初始化
+// 角色列表初始化
 const getRoleList = async () => {
   try {
     const { list, page } = await proxy.$api.getRoleList(queryForm)
