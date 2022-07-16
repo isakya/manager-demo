@@ -94,6 +94,7 @@ let rules = ref({
 let roleList = ref([])
 // 分页
 let pager = reactive({
+  pageNum: 1,
   total: 0,
   pageSize: 10
 })
@@ -111,11 +112,14 @@ const columns = reactive([
     label: '权限列表',
     prop: 'permissionList',
     formatter: (row, column, value) => {
+      console.log(value.halfCheckedKeys)
       if (value.halfCheckedKeys) {
         let names = []
         let list = value.halfCheckedKeys || []
         list.map(key => {
-          if (key) names.push(actionMap.value[key])
+          let name = actionMap.value[key]
+          console.log(actionMap)
+          if (key && name) names.push(actionMap.value[key])
         })
         return names.join(',')
       }
@@ -124,6 +128,13 @@ const columns = reactive([
   {
     label: '创建时间',
     prop: 'createTime',
+    formatter(row, column, value) {
+      return utils.formateDate(new Date(value))
+    }
+  },
+  {
+    label: '更新时间',
+    prop: 'updateTime',
     formatter(row, column, value) {
       return utils.formateDate(new Date(value))
     }
@@ -140,7 +151,7 @@ const handleEdit = (row) => {
   action.value = 'edit'
   showModal.value = true
   proxy.$nextTick(() => {
-    roleForm.value = row
+    roleForm.value = { _id: row._id, roleName: row.roleName, remark: row.remark }
   })
 }
 
@@ -161,7 +172,7 @@ const handleDel = async (_id) => {
 const handleSubmit = () => {
   proxy.$refs.dialogForm.validate(async (valid) => {
     if (valid) {
-      let params = { ...roleForm, action }
+      let params = { ...roleForm.value, action: action.value }
       let res = await proxy.$api.roleOperate(params)
       if (res) {
         showModal.value = false
@@ -243,8 +254,9 @@ const handleClose = () => {
   handleReset('dialogForm')
   showModal.value = false
 }
-const handleCurrentChange = () => {
-
+const handleCurrentChange = (currentPage) => {
+  pager.pageNum = currentPage
+  getRoleList()
 }
 
 
@@ -256,7 +268,7 @@ onMounted(() => {
 // 角色列表初始化
 const getRoleList = async () => {
   try {
-    const { list, page } = await proxy.$api.getRoleList(queryForm)
+    const { list, page } = await proxy.$api.getRoleList({ ...queryForm, ...pager })
     roleList.value = list
     pager.total = page.total
   } catch (error) {
