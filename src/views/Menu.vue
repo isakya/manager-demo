@@ -34,7 +34,7 @@
       </el-table>
     </div>
     <!-- 新增menu -->
-    <el-dialog title="用户新增" v-model="showModal">
+    <el-dialog :before-close="handleClose" title="用户新增" v-model="showModal">
       <el-form ref="dialogForm" :rules="rules" :model="menuForm" label-width="100px">
         <el-form-item label="父级菜单" prop="parentId">
           <el-cascader v-model="menuForm.parentId" :options="menuList"

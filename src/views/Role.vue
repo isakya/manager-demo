@@ -30,7 +30,7 @@
     <el-pagination :page-size="pager.pageSize" @current-change="handleCurrentChange" class="pagination" background
       layout="prev, pager, next" :total="pager.total" />
     <!-- 新增角色 -->
-    <el-dialog title="角色新增" v-model="showModal">
+    <el-dialog :before-close="handleClose" title="角色新增" v-model="showModal">
       <el-form ref="dialogForm" :rules="rules" :model="roleForm" label-width="100px">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="roleForm.roleName" placeholder="请输入角色名称" />

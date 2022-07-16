@@ -38,7 +38,7 @@ export default {
     return request({
       url: '/users/all/list',
       method: 'get',
-      mock: true,
+      mock: false,
       data: {}
     })
   },
@@ -46,7 +46,7 @@ export default {
     return request({
       url: '/dept/operate',
       method: 'post',
-      mock: true,
+      mock: false,
       data: params
     })
   },
@@ -110,7 +110,7 @@ export default {
     return request({
       url: '/dept/list',
       method: 'get',
-      mock: true,
+      mock: false,
       data: params
     })
   },

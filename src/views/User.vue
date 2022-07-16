@@ -42,7 +42,7 @@
         layout="prev, pager, next" :total="pager.total" />
     </div>
     <!-- 新增用户 -->
-    <el-dialog title="用户新增" v-model="showModal">
+    <el-dialog :before-close="handleClose" title="用户新增" v-model="showModal">
       <el-form ref="dialogForm" :rules="rules" :model="userForm" label-width="100px">
         <el-form-item label="用户名" prop="userName">
           <el-input :disabled="action === 'edit'" v-model="userForm.userName" placeholder="请输入用户名称" />

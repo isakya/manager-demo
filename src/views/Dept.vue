@@ -25,7 +25,7 @@
         </el-table>
       </div>
     </div>
-    <el-dialog :title="action === 'create' ? '创建部门' : '编辑部门'" v-model="showModal">
+    <el-dialog :before-close="handleClose" :title="action === 'create' ? '创建部门' : '编辑部门'" v-model="showModal">
       <el-form ref="dialogForm" :model="deptForm" :rules="rules" label-width="120px">
         <el-form-item label="上级部门" prop="parentId">
           <el-cascader placeholder="请选择上级部门" v-model="deptForm.parentId"
@@ -94,7 +94,9 @@ let { queryForm, columns, deptList, rules, deptForm, userList, pager, action, sh
     action: 'create',
     showModal: false,
     userList: [],
-    deptForm: {},
+    deptForm: {
+      parentId: [null]
+    },
     rules: {
       parentId: [
         {
@@ -127,7 +129,7 @@ onMounted(() => {
 
 
 const getDeptList = async () => {
-  let list = await proxy.$api.getDeptList({ ...queryForm.value, ...pager.value })
+  let list = await proxy.$api.getDeptList({ ...queryForm.value })
   deptList.value = list
 }
 
@@ -167,11 +169,9 @@ const handleSubmit = () => {
       let params = { ...deptForm.value, action: action.value }
       delete params.user
       let res = await proxy.$api.deptOperate(params)
-      if (res) {
-        proxy.$message.success('操作成功')
-        handleClose()
-        getDeptList()
-      }
+      proxy.$message.success('操作成功')
+      handleClose()
+      getDeptList()
     }
   })
 }
