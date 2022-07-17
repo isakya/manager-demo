@@ -114,4 +114,12 @@ export default {
       data: params
     })
   },
+  getPermissionList() {
+    return request({
+      url: '/users/getPermissionList',
+      method: 'get',
+      mock: false,
+      data: {}
+    })
+  },
 }
