@@ -112,13 +112,11 @@ const columns = reactive([
     label: '权限列表',
     prop: 'permissionList',
     formatter: (row, column, value) => {
-      console.log(value.halfCheckedKeys)
       if (value.halfCheckedKeys) {
         let names = []
         let list = value.halfCheckedKeys || []
         list.map(key => {
           let name = actionMap.value[key]
-          console.log(actionMap)
           if (key && name) names.push(actionMap.value[key])
         })
         return names.join(',')

@@ -2,6 +2,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import Home from '@/components/Home.vue'
+import storage from './../utils/sotrage'
+import Api from './../api'
+import utils from './../utils/utils'
 
 
 
@@ -80,6 +83,57 @@ const router = createRouter({
   routes
 })
 
+// 动态路由
+// router.addRoute('home', {
+
+// })
+
+async function loadAsyncRoutes() {
+  let userInfo = storage.getItem('userInfo') || {}
+  if (userInfo.token) {
+    try {
+      const { menuList } = await Api.getPermissionList()
+      let routes = utils.generateRoute(menuList)
+
+      routes.map(route => {
+        // 必须先写成变量，然后再放到import中，不能用@,，vite的坑
+        let url = `./../views/${route.component}.vue`
+        route.component = () => import(url)
+        // 动态路由
+        router.addRoute('home', route)
+      })
+    } catch (error) {
+
+    }
+  }
+}
+
+// function generateRoute(menuList) {
+//   let routes = []
+//   const deepList = (list) => {
+//     while (list.length) {
+//       let item = list.pop()
+//       if (item.action) {
+//         routes.push({
+//           name: item.component,
+//           path: item.path,
+//           meta: {
+//             title: item.menuName
+//           },
+//           component: item.component
+//         })
+//       }
+//       if (item.children && !item.action) {
+//         deepList(item.children)
+//       }
+//     }
+//   }
+//   deepList(menuList)
+//   return routes
+// }
+
+
+await loadAsyncRoutes()
 
 // 判断当前地址是否可以访问
 const checkPermission = (path) => {

@@ -183,7 +183,6 @@ const handleEdit = (row) => {
   action.value = 'edit'
   proxy.$nextTick(() => {
     // 浅拷贝
-    console.log(menuForm.value)
     Object.assign(menuForm.value, row)
   })
 }
