@@ -136,18 +136,18 @@ async function loadAsyncRoutes() {
 await loadAsyncRoutes()
 
 // 判断当前地址是否可以访问
-const checkPermission = (path) => {
-  let hasPermission = router.getRoutes().filter(route => route.path === path).length
-  if (hasPermission) {
-    return true
-  } else {
-    return false
-  }
-}
+// const checkPermission = (path) => {
+//   let hasPermission = router.getRoutes().filter(route => route.path === path).length
+//   if (hasPermission) {
+//     return true
+//   } else {
+//     return false
+//   }
+// }
 
 // 导航守卫
 router.beforeEach((to, from, next) => {
-  if (checkPermission(to.path)) {
+  if (router.hasRoute(to.name)) {
     document.title = to.meta.title
     next()
   } else {
