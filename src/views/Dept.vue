@@ -59,6 +59,8 @@
 
 <script setup lang="ts">
 import { getCurrentInstance, reactive, toRefs, toRaw, ref, onMounted } from "vue"
+import utils from '../utils/utils'
+
 
 const { proxy } = getCurrentInstance()
 // let deptList = ref([])
@@ -79,11 +81,17 @@ let { queryForm, columns, deptList, rules, deptForm, userList, pager, action, sh
       },
       {
         label: '更新时间',
-        prop: 'updateTime'
+        prop: 'updateTime',
+        formatter(row, column, value) {
+          return utils.formateDate(new Date(value))
+        }
       },
       {
         label: '创建时间',
-        prop: 'createTime'
+        prop: 'createTime',
+        formatter(row, column, value) {
+          return utils.formateDate(new Date(value))
+        }
       }
     ],
     deptList: null,

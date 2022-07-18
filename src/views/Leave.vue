@@ -27,8 +27,10 @@
           :formatter="item.formatter" :width="item.width" />
         <el-table-column label="操作" width="150">
           <template #default="scope">
-            <el-button type="primary" size="small" @click="handleEdit(scope.row)">查看</el-button>
-            <el-button type="danger" size="small" @click="handleDel(scope.row)">作废</el-button>
+            <el-button type="primary" size="small" @click="handleDetail(scope.row)">查看</el-button>
+            <el-button type="danger" size="small" v-if="[1, 2].includes(scope.row.applyState)"
+              @click="handleDel(scope.row._id)">作废
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -77,6 +79,33 @@
         </span>
       </template>
     </el-dialog>
+    <el-dialog title="申请休假详情" width="50%" v-model="showDetailModal" destroy-on-close>
+      <el-steps :active="detail.applyState > 2 ? 3 : detail.applyState" align-center>
+        <el-step title="待审批" />
+        <el-step title="审批中" />
+        <el-step title="审批通过/审批拒绝" />
+      </el-steps>
+      <el-form label-width="120px" label-suffix=":">
+        <el-form-item label="休假类型">
+          <div>{{ detail.applyTypeName }}</div>
+        </el-form-item>
+        <el-form-item label="休假时间">
+          <div>{{ detail.time }}</div>
+        </el-form-item>
+        <el-form-item label="休假时长">
+          <div>{{ detail.leaveTime }}</div>
+        </el-form-item>
+        <el-form-item label="休假原因">
+          <div>{{ detail.reasons }}</div>
+        </el-form-item>
+        <el-form-item label="审批状态">
+          <div>{{ detail.applyStateName }}</div>
+        </el-form-item>
+        <el-form-item label="审批人">
+          <div>{{ detail.curAuditUserName }}</div>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 <script setup>
@@ -85,7 +114,7 @@ import utils from './../utils/utils'
 
 const { proxy } = getCurrentInstance()
 
-const { queryForm, pager, applyList, leaveForm, showModal, action, rules } = toRefs(reactive({
+const { queryForm, pager, applyList, leaveForm, showModal, action, rules, showDetailModal, detail } = toRefs(reactive({
   queryForm: {
     applyState: ''
   },
@@ -130,7 +159,9 @@ const { queryForm, pager, applyList, leaveForm, showModal, action, rules } = toR
         trigger: ['change', 'blur']
       }
     ]
-  }
+  },
+  showDetailModal: false,
+  detail: {}
 }))
 
 // 定义动态表格格式
@@ -160,7 +191,7 @@ const columns = reactive([
     }
   },
   {
-    label: '休假原因', prop: 'reason'
+    label: '休假原因', prop: 'reasons'
   },
   {
     label: '申请时间', prop: 'createTime', formatter: (row, column, value) => {
@@ -169,11 +200,11 @@ const columns = reactive([
   },
   {
     label: '审批人',
-    prop: 'auditUser'
+    prop: 'auditUsers'
   },
   {
     label: '当前审批人',
-    prop: 'curAuditUser'
+    prop: 'curAuditUserName'
   },
   {
     label: '审批状态',
@@ -187,7 +218,7 @@ const columns = reactive([
         5: '作废',
       }[value]
     }
-  },
+  }
 ])
 
 // 初始化接口调用
@@ -220,10 +251,6 @@ const handleCurrentChange = (currentPage) => {
   pager.pageNum = currentPage
 }
 
-// 用户单个删除
-const handleDel = async (row) => {
-
-}
 
 // 申请休假
 const handleApply = () => {
@@ -244,15 +271,40 @@ const handleSubmit = () => {
     }
   })
 }
-// 用户弹窗关闭
+// 弹窗关闭
 const handleClose = () => {
   showModal.value = false
   handleReset('dialogForm')
 }
-// 用户编辑
-const handleEdit = (row) => {
-  action.value = 'edit'
-  showModal.value = true
+// 查看详情
+const handleDetail = (row) => {
+  showDetailModal.value = true
+  let data = { ...row }
+  data.applyTypeName = {
+    1: '事假',
+    2: '调休',
+    3: '年假'
+  }[data.applyType]
+  data.time = (
+    utils.formateDate(new Date(data.startTime), 'yyyy-MM-dd') + '到' + utils.formateDate(new Date(data.endTime), 'yyyy-MM-dd')
+  )
+  data.applyStateName = {
+    1: '待审批',
+    2: '审批中',
+    3: '审批拒绝',
+    4: '审批通过',
+    5: '作废',
+  }[data.applyState]
+  detail.value = data
+}
+
+
+// 单个删除
+const handleDel = async (_id) => {
+  let params = { _id, action: 'delete' }
+  await proxy.$api.leaveOperate(params)
+  proxy.$message.success('删除成功')
+  getApplyList()
 }
 
 // 获取休假时长

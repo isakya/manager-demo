@@ -126,7 +126,7 @@ export default {
     return request({
       url: '/leave/list',
       method: 'get',
-      mock: true,
+      mock: false,
       data: params
     })
   },
@@ -134,7 +134,7 @@ export default {
     return request({
       url: '/leave/operate',
       method: 'post',
-      mock: true,
+      mock: false,
       data: params
     })
   },
