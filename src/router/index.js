@@ -103,7 +103,7 @@ async function loadAsyncRoutes() {
         router.addRoute('home', route)
       })
     } catch (error) {
-
+      console.log(error)
     }
   }
 }

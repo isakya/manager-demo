@@ -138,4 +138,12 @@ export default {
       data: params
     })
   },
+  leaveApprove(params) {
+    return request({
+      url: '/leave/approve',
+      method: 'post',
+      mock: false,
+      data: params
+    })
+  },
 }
