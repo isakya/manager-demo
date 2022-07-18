@@ -16,6 +16,11 @@ export default {
       activeMenu: location.hash.slice(1)
     }
   },
+  computed: {
+    noticeCount() {
+      return this.$store.state.noticeCount
+    }
+  },
   mounted() {
     this.getNoticeCount()
     this.getMenuList()
@@ -33,7 +38,7 @@ export default {
     async getNoticeCount() {
       try {
         const count = await this.$api.noticeCount()
-        this.noticeCount = count
+        this.$store.commit('saveNoticeCount', count)
       } catch (error) {
         console.error(error)
       }
@@ -77,7 +82,8 @@ export default {
           </div>
         </div>
         <div class="user-info">
-          <el-badge :is-dot="noticeCount > 0 ? true : false" class="notice" type="danger">
+          <el-badge @click="$router.push('/audit/approve')" :is-dot="noticeCount > 0 ? true : false" class="notice"
+            type="danger">
             <el-icon>
               <Bell />
             </el-icon>
@@ -186,6 +192,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+        cursor: pointer;
 
         .notice {
           line-height: 30px;
