@@ -2,6 +2,7 @@
 import utils from './../utils/utils'
 import storage from './../utils/sotrage'
 
+
 export default {
   name: 'login',
   data() {
@@ -26,7 +27,7 @@ export default {
         if (valid) {
           this.$api.login(this.user).then(async (res) => {
             this.$store.commit('saveUserInfo', res)
-            await this.loadAsyncRoutes()
+            // await this.loadAsyncRoutes()
             this.$router.push('/welcome')
           })
         } else {
@@ -34,24 +35,26 @@ export default {
         }
       })
     },
-    async loadAsyncRoutes() {
-      let userInfo = storage.getItem('userInfo') || {}
-      if (userInfo.token) {
-        try {
-          const { menuList } = await this.$api.getPermissionList()
-          let routes = utils.generateRoute(menuList)
+    // async loadAsyncRoutes() {
+    //   let userInfo = storage.getItem('userInfo') || {}
+    //   if (userInfo.token) {
+    //     try {
+    //       const { menuList } = await this.$api.getPermissionList()
+    //       let routes = utils.generateRoute(menuList)
 
-          routes.map(route => {
-            // 必须先写成变量，然后再放到import中，不能用@,，vite的坑
-            let url = `./../views/${route.component}.vue`
-            route.component = () => import(url)
-            this.$router.addRoute('home', route)
-          })
-        } catch (error) {
+    //       routes.map(route => {
+    //         // 必须先写成变量，然后再放到import中，不能用@,，vite的坑
+    //         let url = `./../views/${route.component}.vue`
+    //         // route.component = modules[url]
+    //         // let url = `@/views/${route.component}.vue`
+    //         route.component = () => import(url)
+    //         this.$router.addRoute('home', route)
+    //       })
+    //     } catch (error) {
 
-        }
-      }
-    }
+    //     }
+    //   }
+    // }
   }
 }
 </script>

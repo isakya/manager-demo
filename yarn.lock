@@ -34,6 +34,30 @@
   "resolved" "https://registry.npmjs.org/@sxzz/popperjs-es/-/popperjs-es-2.11.7.tgz"
   "version" "2.11.7"
 
+"@swc/core-win32-x64-msvc@1.2.218":
+  "integrity" "sha512-XYLjX00KV4ft324Q3QDkw61xHkoN7EKkVvIpb0wXaf6wVshwU+BCDyPw2CSg4PQecNP8QGgMRQf9QM7xNtEM7A=="
+  "resolved" "https://registry.npmjs.org/@swc/core-win32-x64-msvc/-/core-win32-x64-msvc-1.2.218.tgz"
+  "version" "1.2.218"
+
+"@swc/core@^1.2.147":
+  "integrity" "sha512-wzXTeBUi3YAHr305lCo1tlxRj5Zpk7hu6rmulngH06NgrH7fS6bj8IaR7K2QPZ4ZZ4U+TGS2tOKbXBmqeMRUtg=="
+  "resolved" "https://registry.npmjs.org/@swc/core/-/core-1.2.218.tgz"
+  "version" "1.2.218"
+  optionalDependencies:
+    "@swc/core-android-arm-eabi" "1.2.218"
+    "@swc/core-android-arm64" "1.2.218"
+    "@swc/core-darwin-arm64" "1.2.218"
+    "@swc/core-darwin-x64" "1.2.218"
+    "@swc/core-freebsd-x64" "1.2.218"
+    "@swc/core-linux-arm-gnueabihf" "1.2.218"
+    "@swc/core-linux-arm64-gnu" "1.2.218"
+    "@swc/core-linux-arm64-musl" "1.2.218"
+    "@swc/core-linux-x64-gnu" "1.2.218"
+    "@swc/core-linux-x64-musl" "1.2.218"
+    "@swc/core-win32-arm64-msvc" "1.2.218"
+    "@swc/core-win32-ia32-msvc" "1.2.218"
+    "@swc/core-win32-x64-msvc" "1.2.218"
+
 "@types/lodash-es@*", "@types/lodash-es@^4.17.6":
   "integrity" "sha512-R+zTeVUKDdfoRxpAryaQNRKk3105Rrgx2CFRClIgRGaqDTdjsm8h6IYA8ir584W3ePzkZfst5xIgDwYrlh9HLg=="
   "resolved" "https://registry.npmjs.org/@types/lodash-es/-/lodash-es-4.17.6.tgz"
@@ -523,7 +547,14 @@
   dependencies:
     "is-number" "^7.0.0"
 
-"vite@^2.5.10", "vite@^2.9.9":
+"vite-plugin-top-level-await@^1.1.0":
+  "integrity" "sha512-tsbIqX76hfuGDgZqt/8DgCqXtWqeZv0T5LowR0M5BGWDsNlNItquDXaG2VMNhFjlcGTJl8owZMXeWwUUGl8kwQ=="
+  "resolved" "https://registry.npmjs.org/vite-plugin-top-level-await/-/vite-plugin-top-level-await-1.1.0.tgz"
+  "version" "1.1.0"
+  dependencies:
+    "@swc/core" "^1.2.147"
+
+"vite@^2.5.10", "vite@^2.9.9", "vite@>=2.8":
   "integrity" "sha512-AsOBAaT0AD7Mhe8DuK+/kE4aWYFMx/i0ZNi98hJclxb4e0OhQcZYUrvLjIaQ8e59Ui7txcvKMiJC1yftqpQoDw=="
   "resolved" "https://registry.npmjs.org/vite/-/vite-2.9.13.tgz"
   "version" "2.9.13"

@@ -5,7 +5,7 @@ import Home from '@/components/Home.vue'
 import storage from './../utils/sotrage'
 import Api from './../api'
 import utils from './../utils/utils'
-
+const modules = import.meta.glob('../view/**/**.vue')
 
 
 const routes = [
@@ -16,7 +16,7 @@ const routes = [
       title: '首页'
     },
     component: Home,
-    redirect: '/welcome',
+    redirect: '/login',
     children: [
       {
         name: 'welcome',
@@ -94,11 +94,14 @@ async function loadAsyncRoutes() {
     try {
       const { menuList } = await Api.getPermissionList()
       let routes = utils.generateRoute(menuList)
-
       routes.map(route => {
         // 必须先写成变量，然后再放到import中，不能用@,，vite的坑
-        let url = `./../views/${route.component}.vue`
-        route.component = () => import(url)
+        let url = import(`./../views/${route.component}.vue`)
+        // let url = `@/views/${route.component}.vue`
+        // route.component = modules[url]
+        // console.log(modules)
+        route.component = () => url
+        // route.component = () => import(/* @vite-ignore */url)
         // 动态路由
         router.addRoute('home', route)
       })
