@@ -1,7 +1,11 @@
 # Vue 3 + Vite
 
 本项目基于Vue 3 + Vite构建
-基于Vue 3 + Vite + Element UI 构建的后台管理系统解决方案。[在线访问地址](http://106.12.161.180:80/)
+基于Vue 3 + Vite + Element UI 构建的后台管理系统解决方案。[在线访问地址](http://106.12.161.180:80/)  
+
+[server端](https://github.com/isakya/manager-server)
+
+
 
 ## 功能 ##
 - [x] Element-Plus UI
@@ -27,3 +31,4 @@ npm run dev
 // 执行构建命令，生成的dist文件夹放在服务器下即可访问
 npm run build
 ```
+
